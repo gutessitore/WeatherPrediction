@@ -30,11 +30,11 @@ class Extractor:
             try:
                 mins = (time.time() - self.start_time) / 60 + 1
                 current_cpm = self.api_calls / mins
-                print(f"Current CPM: {current_cpm}")
-                print(f"Current API calls: {self.api_calls} in {mins:.2f} minutes")
+                # print(f"Current CPM: {current_cpm}")
+                # print(f"Current API calls: {self.api_calls} in {mins:.2f} minutes")
                 if current_cpm > self.calls_per_minute:
                     time_to_wait = 60 - (time.time() - self.start_time) % 60
-                    print(f"Waiting {time_to_wait} seconds")
+                    # print(f"Waiting {time_to_wait} seconds")
                     time.sleep(time_to_wait)
 
                 if self.api_calls > self.max_calls:
