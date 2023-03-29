@@ -66,18 +66,19 @@ class Extractor:
         return df
 
 
-start = "2020-07-09"
-end = "2020-12-31"
+if __name__ == "__main__":
+    start = "2014-12-31"
+    end = "2015-12-31"
 
-api_key = "YOUR_API_KEY"
-lat = -23.555771
-lon = -46.639557
+    api_key = "YOUR_API_KEY"
+    lat = -23.555771
+    lon = -46.639557
 
-extractor = Extractor(lat, lon, start, end, api_key)
-extractor.start_extraction()
-df = extractor.to_df
+    extractor = Extractor(lat, lon, start, end, api_key)
+    extractor.start_extraction()
+    df = extractor.to_df
 
-last_date = datetime.fromtimestamp(df.dt.iloc[-1]).date()
+    last_date = datetime.fromtimestamp(df.dt.iloc[-1]).date()
 
-filename = f"{start}_{last_date}.csv"
-df.to_csv(f"../data/{filename}", index=False)
+    filename = f"{start}_{last_date}.csv"
+    df.to_csv(f"../data/{filename}", index=False)
