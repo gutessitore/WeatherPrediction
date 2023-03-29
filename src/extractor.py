@@ -3,6 +3,7 @@ import requests
 import time
 import json
 from datetime import datetime
+from tqdm import tqdm
 
 
 class Extractor:
@@ -18,7 +19,7 @@ class Extractor:
         self.start_time = None
         self.data = None
         self.last_collected_date = datetime.fromtimestamp(self.dates_to_collect[0]).date()
-        print(f"Collecting data from {self.last_collected_date} to {end}...")
+        print(f"Collecting data from {self.last_collected_date} to {end} ...")
 
     def url(self, date):
         return f"https://api.openweathermap.org/data/3.0/onecall/timemachine?lat={self.lat}&lon={self.lon}&dt={date}&appid={self.api_key}&units={self.units}"
@@ -29,7 +30,7 @@ class Extractor:
 
     def extract(self):
         data = []
-        for date in self.dates_to_collect:
+        for date in tqdm(self.dates_to_collect):
             try:
                 mins = (time.time() - self.start_time) / 60 + 1
                 current_cpm = self.api_calls / mins
