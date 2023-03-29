@@ -18,8 +18,7 @@ class Extractor:
         self.units = units
         self.start_time = None
         self.data = None
-        self.last_collected_date = datetime.fromtimestamp(self.dates_to_collect[0]).date()
-        print(f"Collecting data from {self.last_collected_date} to {end} ...")
+        print(f"\nCollecting data from {start} to {end} ...")
 
     def url(self, date):
         return f"https://api.openweathermap.org/data/3.0/onecall/timemachine?lat={self.lat}&lon={self.lon}&dt={date}&appid={self.api_key}&units={self.units}"
@@ -57,8 +56,6 @@ class Extractor:
             except Exception as e:
                 print(e)
                 break
-            finally:
-                self.last_collected_date = datetime.fromtimestamp(date).date()
 
         self.data = data
 
@@ -80,5 +77,7 @@ extractor = Extractor(lat, lon, start, end, api_key)
 extractor.start_extraction()
 df = extractor.to_df
 
-filename = f"{start}_{extractor.last_collected_date}.csv"
+last_date = datetime.fromtimestamp(df.dt.iloc[-1]).date()
+
+filename = f"{start}_{last_date}.csv"
 df.to_csv(f"../data/{filename}", index=False)
