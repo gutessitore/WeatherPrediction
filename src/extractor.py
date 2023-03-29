@@ -2,6 +2,7 @@ import pandas as pd
 import requests
 import time
 import json
+from datetime import datetime
 
 
 class Extractor:
@@ -16,6 +17,8 @@ class Extractor:
         self.units = units
         self.start_time = None
         self.data = None
+        self.last_collected_date = datetime.fromtimestamp(self.dates_to_collect[0]).date()
+        print(f"Collecting data from {self.last_collected_date} to {end}...")
 
     def url(self, date):
         return f"https://api.openweathermap.org/data/3.0/onecall/timemachine?lat={self.lat}&lon={self.lon}&dt={date}&appid={self.api_key}&units={self.units}"
@@ -53,6 +56,8 @@ class Extractor:
             except Exception as e:
                 print(e)
                 break
+            finally:
+                self.last_collected_date = datetime.fromtimestamp(date).date()
 
         self.data = data
 
@@ -63,8 +68,8 @@ class Extractor:
         return df
 
 
-start = "2021-01-01"
-end = "2023-03-01"
+start = "2020-07-09"
+end = "2020-12-31"
 
 api_key = "YOUR_API_KEY"
 lat = -23.555771
@@ -74,5 +79,5 @@ extractor = Extractor(lat, lon, start, end, api_key)
 extractor.start_extraction()
 df = extractor.to_df
 
-filename = f"{start}_{end}.csv"
+filename = f"{start}_{extractor.last_collected_date}.csv"
 df.to_csv(f"../data/{filename}", index=False)
