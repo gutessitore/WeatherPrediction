@@ -1,0 +1,21 @@
+id,main,description,icon
+701,Mist,mist,50n
+800,Clear,clear sky,01n
+721,Haze,haze,50n
+803,Clouds,broken clouds,04n
+211,Thunderstorm,thunderstorm,11n
+500,Rain,light rain,10n
+501,Rain,moderate rain,10n
+801,Clouds,few clouds,02n
+802,Clouds,scattered clouds,03n
+520,Rain,light intensity shower rain,09n
+804,Clouds,overcast clouds,04n
+502,Rain,heavy intensity rain,10n
+300,Drizzle,light intensity drizzle,09n
+200,Thunderstorm,thunderstorm with light rain,11n
+522,Rain,heavy intensity shower rain,09n
+201,Thunderstorm,thunderstorm with rain,11n
+202,Thunderstorm,thunderstorm with heavy rain,11n
+301,Drizzle,drizzle,09n
+503,Rain,very heavy rain,10n
+302,Drizzle,heavy intensity drizzle,09n
