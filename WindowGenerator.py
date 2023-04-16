@@ -4,20 +4,22 @@ import tensorflow as tf
 
 class WindowGenerator():
     def __init__(self, input_width, label_width, shift,
-                 train_df, val_df, test_df,
-                 label_columns=None):
-        # Store the raw data
+               train_df, val_df, test_df,
+               label_columns=None):
+        # Store the raw data.
         self.train_df = train_df
         self.val_df = val_df
         self.test_df = test_df
 
-        # Store the column names
+        # Work out the label column indices.
         self.label_columns = label_columns
+        if label_columns is not None:
+            self.label_columns_indices = {name: i for i, name in
+                                            enumerate(label_columns)}
+            self.column_indices = {name: i for i, name in
+                                enumerate(train_df.columns)}
 
-        # Work out the label column indices
-        self.column_indices = {name: i for i, name in enumerate(train_df.columns)}
-
-        # Work out the window parameters
+        # Work out the window parameters.
         self.input_width = input_width
         self.label_width = label_width
         self.shift = shift
@@ -31,32 +33,27 @@ class WindowGenerator():
         self.labels_slice = slice(self.label_start, None)
         self.label_indices = np.arange(self.total_window_size)[self.labels_slice]
 
+    def __repr__(self):
+        return '\n'.join([
+            f'Total window size: {self.total_window_size}',
+            f'Input indices: {self.input_indices}',
+            f'Label indices: {self.label_indices}',
+            f'Label column name(s): {self.label_columns}'])
 
     def split_window(self, features):
         inputs = features[:, self.input_slice, :]
         labels = features[:, self.labels_slice, :]
         if self.label_columns is not None:
-            labels = tf.stack([labels[:, :, self.column_indices[name]] for name in self.label_columns], axis=-1)
+            labels = tf.stack(
+                [labels[:, :, self.column_indices[name]] for name in self.label_columns],
+                axis=-1)
 
-        # Set shape for Tensors
+        # Slicing doesn't preserve static shape information, so set the shapes
+        # manually. This way the `tf.data.Datasets` are easier to inspect.
         inputs.set_shape([None, self.input_width, None])
         labels.set_shape([None, self.label_width, None])
 
         return inputs, labels
-    
-
-def plot_window_data_distributions(window):
-    fig, axes = plt.subplots(nrows=window.column_indices.size, figsize=(10, 7))
-    for idx, ax in enumerate(axes):
-        ax.hist(window.train.dataset[:, idx], bins=30, alpha=0.5, color='blue', label='Train')
-        ax.hist(window.val.dataset[:, idx], bins=30, alpha=0.5, color='green', label='Val')
-        ax.hist(window.test.dataset[:, idx], bins=30, alpha=0.5, color='orange', label='Test')
-        ax.set_title(window.column_indices.keys()[idx].capitalize())
-        ax.legend()
-
-    plt.suptitle('Window Data Distributions')
-    plt.show()
-
 
     def make_dataset(self, data):
         data = np.array(data, dtype=np.float32)
@@ -81,3 +78,25 @@ def plot_window_data_distributions(window):
     @property
     def test(self):
         return self.make_dataset(self.test_df)
+    
+    def plot(self, model=None, plot_col='valor', max_subplots=3):
+        inputs, labels = self.example
+        plt.figure(figsize=(10, 6))
+        plot_col_index = self.column_indices[plot_col]
+
+        max_n = min(max_subplots, len(inputs))
+        for n in range(max_n):
+            plt.subplot(max_n, 1, n+1)
+            plt.ylabel(f'{plot_col} [normed]')
+            plt.plot(self.input_indices, inputs[n, :, plot_col_index],
+                        label='Inputs', marker='.', zorder=-10)
+
+            if self.label_columns:
+                label_col_index = self.label_columns_indices.get(plot_col, None)
+            else:
+                label_col_index = plot_col_index
+
+            if label_col_index is None:
+                continue
+
+            plt.scatter(self.label_indices)
