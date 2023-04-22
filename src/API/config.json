@@ -6,11 +6,15 @@
       "features": ["feature1", "feature2", "feature3", "feature4"]
   },
   "modelo_transito": {
-      "features": ["feature1", "feature2", "feature3", "feature4"]
+      "features": [],
+      "input_data_structure": "np.reshape(np.array({0}), (1, np.array({0}).shape[0], np.array({0}).shape[1]))",
+      "load_function": "load_model",
+      "file_extension": "h5"
   },
   "modelo_irradiacao": {
       "features": [
         "year", "month", "temp ºC", "feels_like ºC", "pressure", "humidity %", "clouds %", "visibility", "wind_speed m/s"
-      ]
+      ],
+      "input_data_structure": "pd.DataFrame({0}, index=[0])"
   }
 }
