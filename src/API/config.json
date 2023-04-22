@@ -1,3 +1,16 @@
 {
-  "features": ["feature1", "feature2", "feature3", "feature4"]
+  "modelo_clima": {
+    "features": ["feature1", "feature2", "feature3", "feature4"]
+  },
+  "modelo_temperatura": {
+      "features": ["feature1", "feature2", "feature3", "feature4"]
+  },
+  "modelo_transito": {
+      "features": ["feature1", "feature2", "feature3", "feature4"]
+  },
+  "modelo_irradiacao": {
+      "features": [
+        "year", "month", "temp ºC", "feels_like ºC", "pressure", "humidity %", "clouds %", "visibility", "wind_speed m/s"
+      ]
+  }
 }
