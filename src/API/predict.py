@@ -5,7 +5,9 @@ import os
 import json
 import joblib
 import pandas as pd
+from keras.models import load_model
 from flask import Flask, jsonify, request
+import numpy as np
 
 app = Flask(__name__)
 
@@ -14,11 +16,11 @@ with open('config.json', 'r', encoding='utf-8') as f:
     config = json.load(f)
 
 
-def load_model(model_name):
-    model_path = os.path.join('..', '..', 'models', f'{model_name}.pkl')
+def _load_model(model_name, load_func=joblib.load, file_extension='pkl'):
+    model_path = os.path.join('..', '..', 'models', f'{model_name}.{file_extension}')
     if not os.path.isfile(model_path):
         return None
-    return joblib.load(model_path)
+    return load_func(model_path)
 
 
 @app.route('/predict/clima', methods=['POST'])
@@ -51,12 +53,14 @@ def predict(model_name):
             {"error": "Dados insuficientes para realizar a previsão.", "missing_features": missing_features}), 400
 
     # Carrega o modelo
-    model = load_model(model_name)
+    load_function = eval(config[model_name].get('load_function', "joblib.load"))
+    file_extension = config[model_name].get('file_extension', 'pkl')
+    model = _load_model(model_name, load_function, file_extension)
     if model is None:
         return jsonify({"error": f"Modelo '{model_name}' não encontrado."}), 404
 
     # Extrai os dados das features
-    feature_data = pd.DataFrame(data, index=[0])
+    feature_data = eval(config[model_name]['input_data_structure'].format("data"))
 
     # Realiza a previsão
     prediction = model.predict(feature_data)[0]
