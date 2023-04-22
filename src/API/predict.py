@@ -4,19 +4,18 @@ curl -X POST -H "Content-Type: application/json" -d '{"feature1": 1, "feature2":
 import os
 import json
 import joblib
+import pandas as pd
 from flask import Flask, jsonify, request
 
 app = Flask(__name__)
 
 # Carrega a configuração das features
-with open('config.json', 'r') as f:
+with open('config.json', 'r', encoding='utf-8') as f:
     config = json.load(f)
-
-features = config['features']
 
 
 def load_model(model_name):
-    model_path = os.path.join('models', f'{model_name}.pkl')
+    model_path = os.path.join('..', '..', 'models', f'{model_name}.pkl')
     if not os.path.isfile(model_path):
         return None
     return joblib.load(model_path)
@@ -24,20 +23,32 @@ def load_model(model_name):
 
 @app.route('/predict/clima', methods=['POST'])
 def predict_clima():
-    return predict('model_clima')
+    return predict('modelo_clima')
 
 
 @app.route('/predict/temperatura', methods=['POST'])
 def predict_temperatura():
-    return predict('model_temperatura')
+    return predict('modelo_temperatura')
+
+
+@app.route('/predict/transito', methods=['POST'])
+def predict_transito():
+    return predict('modelo_transito')
+
+
+@app.route('/predict/irradiacao', methods=['POST'])
+def predict_irradiacao():
+    return predict('modelo_irradiacao')
 
 
 def predict(model_name):
-    data = request.get_json()
+    data = request.get_json()[0]
+    features = config[model_name]['features']
 
-    # Verifica se os dados necessários estão presentes
-    if not all(k in data for k in features):
-        return jsonify({"error": "Dados insuficientes para realizar a previsão."}), 400
+    missing_features = [k for k in features if k not in data]
+    if missing_features:
+        return jsonify(
+            {"error": "Dados insuficientes para realizar a previsão.", "missing_features": missing_features}), 400
 
     # Carrega o modelo
     model = load_model(model_name)
@@ -45,13 +56,13 @@ def predict(model_name):
         return jsonify({"error": f"Modelo '{model_name}' não encontrado."}), 404
 
     # Extrai os dados das features
-    feature_data = [data[feature] for feature in features]
+    feature_data = pd.DataFrame(data, index=[0])
 
     # Realiza a previsão
-    prediction = model.predict([feature_data])[0]
+    prediction = model.predict(feature_data)[0]
 
     # Retorna o resultado
-    return jsonify({f"{model_name}_prediction": prediction}), 200
+    return jsonify({f"{model_name}_prediction": float(prediction)}), 200
 
 
 if __name__ == '__main__':
