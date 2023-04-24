@@ -1,0 +1,11 @@
+joblib~=1.2.0
+numpy~=1.23.5
+pandas~=1.5.3
+keras~=2.12.0
+Flask~=2.2.3
+google~=3.0.0
+PyAutoGUI~=0.9.53
+keyboard~=0.13.5
+streamlit~=1.21.0
+xgboost~=1.7.5
+scikit-learn~=1.2.2
