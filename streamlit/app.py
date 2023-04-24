@@ -2,14 +2,15 @@ import streamlit as st
 from datetime import datetime, timedelta
 import pandas as pd
 from functions_models import xgboost_regressor
+import requests
 
-#inputs user --> area, rendimento%, range data
+# inputs user --> area, rendimento%, range data
 
-#CSV's
+# CSV's
 df_irrad = pd.read_csv('data/openw_irradiation_2005_2020.csv')
-df_irrad.drop(['day', 'weather_id'], axis = 1, inplace=True)
+df_irrad.drop(['day', 'weather_id'], axis=1, inplace=True)
 
-y_pred = xgboost_regressor(df_irrad) #irradiation predictions
+y_pred = xgboost_regressor(df_irrad)  # irradiation predictions
 
 # y_pred = [118.130264, 114.73563 , 101.42404 , 176.47775 , 112.80841 ,
 #        157.99327 , 110.982155, 108.196976, 110.56889 , 137.60085 ,
@@ -26,20 +27,48 @@ now = datetime.now()
 current_month = now.month
 current_year = now.year
 
-dates = [datetime(current_year + ((current_month + i - 1) // 12), (current_month + i) % 12 or 12, 1) for i in range(1, 33)]
-df = pd.DataFrame({'data':dates, 
-                   'irrad kwh/m2':y_pred})
+dates = [datetime(current_year + ((current_month + i - 1) // 12), (current_month + i) % 12 or 12, 1) for i in
+         range(1, 33)]
+df = pd.DataFrame(
+    {
+        'data': dates,
+        'irrad kwh/m2': y_pred
+    }
+)
 
+# Usando a API para pegar os dados previstos
+json_data = [
+    {
+        "year": 2018,
+        "month": 5,
+        "temp ºC": 18.28354838709677,
+        "feels_like ºC": 18.11935483870968,
+        "pressure": 1021.0967741935484,
+        "humidity %": 74.70967741935483,
+        "clouds %": 43.2258064516129,
+        "visibility": 9999.90909090909,
+        "wind_speed m/s": 3.2841935483870968
+    }
+]
+headers = {"Content-Type": "application/json"}
+
+response = requests.post(
+    "http://127.0.0.1:5000/predict/irradiacao",
+    json=json_data,
+    headers=headers
+)
+
+st.markdown(f"{response.json()}")
 
 #######################App###################################
 st.markdown('# Energy Generation Predictor')
 st.dataframe(df)
 
-#user inputs
+# user inputs
 area = st.number_input('Digite a área total em m2 de painéis solares', step=5, min_value=2)
 rend = st.slider('Digite o rendimento médio em % dos painéis', min_value=0, max_value=100, step=1)
 range_data = st.number_input('Digite a quantidade em anos para previsão', min_value=1, max_value=20, step=1)
 
-#calc_energy
-calc_energy = df['irrad kwh/m2'].sum() * area * rend/100
-st.write(f'A energia gerada para os próximos {range_data} anos é', round(calc_energy,2), 'kwh') 
+# calc_energy
+calc_energy = df['irrad kwh/m2'].sum() * area * rend / 100
+st.write(f'A energia gerada para os próximos {range_data} anos é', round(calc_energy, 2), 'kwh')
