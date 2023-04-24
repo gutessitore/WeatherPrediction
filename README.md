@@ -1,7 +1,7 @@
 # WeatherPrediction
 
 ## Architeture Diagram
-[![Image Alt Text](project_modeling.jpg)]
+![Image Alt Text](project_modeling.jpg)
 
 ## Repository Structure
 
