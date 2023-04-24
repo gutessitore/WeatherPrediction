@@ -4,20 +4,38 @@ curl -X POST -H "Content-Type: application/json" -d '{"feature1": 1, "feature2":
 import os
 import json
 import joblib
+import numpy as np
 import pandas as pd
 from keras.models import load_model
 from flask import Flask, jsonify, request
-import numpy as np
 
 app = Flask(__name__)
 
 # Carrega a configuração das features
-with open('config.json', 'r', encoding='utf-8') as f:
-    config = json.load(f)
+config = {
+  "modelo_clima": {
+    "features": ["feature1", "feature2", "feature3", "feature4"]
+  },
+  "modelo_temperatura": {
+      "features": ["feature1", "feature2", "feature3", "feature4"]
+  },
+  "modelo_transito": {
+      "features": [],
+      "input_data_structure": "np.reshape(np.array({0}), (1, np.array({0}).shape[0], np.array({0}).shape[1]))",
+      "load_function": "load_model",
+      "file_extension": "h5"
+  },
+  "modelo_irradiacao": {
+      "features": [
+        "year", "month", "temp ºC", "feels_like ºC", "pressure", "humidity %", "clouds %", "visibility", "wind_speed m/s"
+      ],
+      "input_data_structure": "pd.DataFrame({0}, index=[0])"
+  }
+}
 
 
 def _load_model(model_name, load_func=joblib.load, file_extension='pkl'):
-    model_path = os.path.join('..', '..', 'models', f'{model_name}.{file_extension}')
+    model_path = os.path.join('..', 'models', f'{model_name}.{file_extension}')
     if not os.path.isfile(model_path):
         return None
     return load_func(model_path)
@@ -69,5 +87,9 @@ def predict(model_name):
     return jsonify({f"{model_name}_prediction": float(prediction)}), 200
 
 
-if __name__ == '__main__':
+def run():
     app.run(debug=True)
+
+
+if __name__ == '__main__':
+    run()
