@@ -13,12 +13,6 @@ app = Flask(__name__)
 
 # Carrega a configuração das features
 config = {
-  "modelo_clima": {
-    "features": ["feature1", "feature2", "feature3", "feature4"]
-  },
-  "modelo_temperatura": {
-      "features": ["feature1", "feature2", "feature3", "feature4"]
-  },
   "modelo_transito": {
       "features": [],
       "input_data_structure": "np.reshape(np.array({0}), (1, np.array({0}).shape[0], np.array({0}).shape[1]))",
@@ -70,12 +64,13 @@ def predict(model_name):
         return jsonify(
             {"error": "Dados insuficientes para realizar a previsão.", "missing_features": missing_features}), 400
 
-    # Carrega o modelo
-    load_function = eval(config[model_name].get('load_function', "joblib.load"))
-    file_extension = config[model_name].get('file_extension', 'pkl')
-    model = _load_model(model_name, load_function, file_extension)
-    if model is None:
-        return jsonify({"error": f"Modelo '{model_name}' não encontrado."}), 404
+    # Carregas o modelos
+    for model_name in config.keys():
+        load_function = eval(config[model_name].get('load_function', "joblib.load"))
+        file_extension = config[model_name].get('file_extension', 'pkl')
+        model = _load_model(model_name, load_function, file_extension)
+        if model is None:
+            return jsonify({"error": f"Modelo '{model_name}' não encontrado."}), 404
 
     # Extrai os dados das features
     feature_data = eval(config[model_name]['input_data_structure'].format("data"))
