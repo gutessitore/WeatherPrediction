@@ -39,35 +39,35 @@ style_sul = f"background-color: {color[4]}; color: white;"
 with col_main1:
     col_mainsub1, col_mainsub2, col_mainsub3, col_mainsub4, col_mainsub5 = st.columns(5)
     with col_mainsub1: # Create a styled colored block for each city region
-        st.markdown('.')
+        st.markdown('<br>', unsafe_allow_html=True)
         st.markdown(f'<div style="{style_norte}">'
             f'<p style="font-size: 24px; font-weight: bold; margin: 0; text-align: center">{city_region[0]}</p>'
             f'<p style="font-size: 48px; font-weight: bold; margin: 0; text-align: center; line-height: 1">{traffic_jam[0]} Km</p>'
             f'<p style="font-size: 18px; margin: 0; text-align: center">de lentidão</p>'
             '</div>', unsafe_allow_html=True)
     with col_mainsub2:
-        st.markdown('.')
+        st.markdown('<br>', unsafe_allow_html=True)
         st.markdown(f'<div style="{style_oeste}">'
             f'<p style="font-size: 24px; font-weight: bold; margin: 0; text-align: center">{city_region[1]}</p>'
             f'<p style="font-size: 48px; font-weight: bold; margin: 0; text-align: center; line-height: 1">{traffic_jam[1]} Km</p>'
             f'<p style="font-size: 18px; margin: 0; text-align: center">de lentidão</p>'
             '</div>', unsafe_allow_html=True)
     with col_mainsub3:
-        st.markdown('.')
+        st.markdown('<br>', unsafe_allow_html=True)
         st.markdown(f'<div style="{style_centro}">'
             f'<p style="font-size: 24px; font-weight: bold; margin: 0; text-align: center">{city_region[2]}</p>'
             f'<p style="font-size: 48px; font-weight: bold; margin: 0; text-align: center; line-height: 1">{traffic_jam[2]} Km</p>'
             f'<p style="font-size: 18px; margin: 0; text-align: center">de lentidão</p>'
             '</div>', unsafe_allow_html=True)
     with col_mainsub4:
-        st.markdown('.')
+        st.markdown('<br>', unsafe_allow_html=True)
         st.markdown(f'<div style="{style_leste}">'
             f'<p style="font-size: 24px; font-weight: bold; margin: 0; text-align: center">{city_region[3]}</p>'
             f'<p style="font-size: 48px; font-weight: bold; margin: 0; text-align: center; line-height: 1">{traffic_jam[3]} Km</p>'
             f'<p style="font-size: 18px; margin: 0; text-align: center">de lentidão</p>'
             '</div>', unsafe_allow_html=True)
     with col_mainsub5:
-        st.markdown('.')
+        st.markdown('<br>', unsafe_allow_html=True)
         st.markdown(f'<div style="{style_sul}">'
             f'<p style="font-size: 24px; font-weight: bold; margin: 0; text-align: center">{city_region[4]}</p>'
             f'<p style="font-size: 48px; font-weight: bold; margin: 0; text-align: center; line-height: 1">{traffic_jam[4]} Km</p>'
@@ -79,11 +79,17 @@ with col_main1:
 image = Image.open('SPcity.png')
 min_date = datetime.strptime("2010-01-02", "%Y-%m-%d").date()
 
+
 with col_main2:
     coltest1,coltest2 = st.columns([1,3])
     with coltest2:
         st.image(image)
-    st.markdown('.')
+    st.markdown('<br>', unsafe_allow_html=True)
+    st.markdown('<br>', unsafe_allow_html=True)
+    st.markdown('<br>', unsafe_allow_html=True)
     st.date_input('📅 Data', min_value = min_date)
+    st.markdown('<br>', unsafe_allow_html=True)
     st.time_input('🕘 Horário',step= 1800)
+
+
 
